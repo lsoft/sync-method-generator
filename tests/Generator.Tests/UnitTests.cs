@@ -658,4 +658,44 @@ long myLong;
 
 await Task.CompletedTask;
 """.Verify(false, true, sourceType: SourceType.MethodBody);
+
+    [Fact]
+    public Task ConfigureAwaitHelper() => $$"""
+namespace Test;
+
+static partial class CafUsage
+{
+    [CreateSyncVersion]
+    static async Task WriteAsync(ReadOnlyMemory<byte> buffer, Stream stream, CancellationToken ct)
+        => await stream.WriteAsync(buffer, ct).Caf();
+
+    [RemoveAsyncInvocation]
+    public static ConfiguredValueTaskAwaitable Caf(this ValueTask task)
+    {
+        return task.ConfigureAwait(false);
+    }
+
+    [RemoveAsyncInvocation]
+    public static ConfiguredValueTaskAwaitable<T> Caf<T>(this ValueTask<T> task)
+    {
+        return task.ConfigureAwait(false);
+    }
+
+    [RemoveAsyncInvocation]
+    public static ConfiguredTaskAwaitable<T> Caf<T>(
+        this Task<T> task
+        )
+    {
+        return task.ConfigureAwait(false);
+    }
+
+    [RemoveAsyncInvocation]
+    public static ConfiguredTaskAwaitable Caf(
+        this Task task
+        )
+    {
+        return task.ConfigureAwait(false);
+    }
+}
+""".Verify(false, true, sourceType: SourceType.Full);
 }

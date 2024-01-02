@@ -1,4 +1,6 @@
-﻿using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+﻿using Microsoft.CodeAnalysis;
+using System.Data;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Zomp.SyncMethodGenerator;
 
@@ -362,6 +364,21 @@ internal sealed class AsyncToSyncRewriter(SemanticModel semanticModel) : CSharpS
         if (symbol is not IMethodSymbol methodSymbol)
         {
             throw new InvalidOperationException($"Could not get symbol of {node}");
+        }
+
+        var attributes = methodSymbol.GetAttributes();
+        var removeInvocationAttributeExists = attributes.Any(
+            a => a.AttributeClass?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == SyncMethodSourceGenerator.RemoveAsyncInvocationAttributeTypeName);
+        if (removeInvocationAttributeExists)
+        {
+            // We need to remove this invocation.
+            var childExpression = node.Expression.ChildNodes().OfType<InvocationExpressionSyntax>().FirstOrDefault();
+            if (childExpression is null)
+            {
+                return @base;
+            }
+
+            return base.VisitInvocationExpression(childExpression);
         }
 
         if (@base.Expression is IdentifierNameSyntax ins && ins.Identifier.ValueText.EndsWithAsync())

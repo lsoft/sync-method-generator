@@ -10,6 +10,12 @@ public class SyncMethodSourceGenerator : IIncrementalGenerator
     /// Create sync version attribute string.
     /// </summary>
     public const string CreateSyncVersionAttribute = "CreateSyncVersionAttribute";
+
+    /// <summary>
+    /// Create remove invocation attribute string.
+    /// </summary>
+    public const string RemoveAsyncInvocationAttributeTypeName = "global::Zomp.SyncMethodGenerator.RemoveAsyncInvocationAttribute";
+
     internal const string QualifiedCreateSyncVersionAttribute = $"{ThisAssembly.RootNamespace}.{CreateSyncVersionAttribute}";
 
     /// <inheritdoc/>

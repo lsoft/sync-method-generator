@@ -16,6 +16,14 @@ namespace Zomp.SyncMethodGenerator
     internal class CreateSyncVersionAttribute : System.Attribute
     {
     }
+
+    /// <summary>
+    /// An attribute that can be used to instruct the generator to remove such invocation from an async method body while sync method body is generated. Must be used against a method.
+    /// </summary>
+    [System.AttributeUsage(System.AttributeTargets.Method)]
+    internal class RemoveAsyncInvocationAttribute : System.Attribute
+    {
+    }
 }
 """;
 
